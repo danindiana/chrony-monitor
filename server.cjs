@@ -84,7 +84,8 @@ const getSystemMetrics = () => {
   } catch (e) {}
 
   // 4. Net Rate
-  let netRate = 0;
+  let rxRate = 0;
+  let txRate = 0;
   try {
     const interfaces = os.networkInterfaces();
     const primaryIface = interfaces['eth0'] ? 'eth0' : (interfaces['wlan0'] ? 'wlan0' : Object.keys(interfaces)[0]);
@@ -96,14 +97,31 @@ const getSystemMetrics = () => {
       const now = Date.now();
       if (lastNetTime) {
         const timeDiff = (now - lastNetTime.time) / 1000;
-        const bytesDiff = (rx - lastNetTime.rx) + (tx - lastNetTime.tx);
-        netRate = (bytesDiff / 1024) / timeDiff;
+        rxRate = ((rx - lastNetTime.rx) / 1024) / timeDiff;
+        txRate = ((tx - lastNetTime.tx) / 1024) / timeDiff;
       }
       lastNetTime = { time: now, rx, tx };
     }
   } catch (e) {}
 
-  return { cpu: cpuUsage, ram: ramUsagePercent, temp, networkRate: Math.max(0, netRate) };
+  // 5. Disk Usage
+  let diskUsage = 0;
+  try {
+    const df = require('child_process').execSync('df / | tail -1 | awk \'{print $5}\'', {encoding: 'utf8'});
+    diskUsage = parseFloat(df.replace('%', ''));
+  } catch(e) {}
+
+  return { 
+    cpu: cpuUsage, 
+    ram: ramUsagePercent, 
+    temp, 
+    networkRate: Math.max(0, rxRate + txRate),
+    rxRate: Math.max(0, rxRate),
+    txRate: Math.max(0, txRate),
+    disk: diskUsage || 0,
+    uptime: os.uptime(),
+    load: os.loadavg()[0]
+  };
 };
 
 const getChronyMetrics = () => {

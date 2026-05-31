@@ -4,14 +4,20 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import './App.css';
 
 interface ChronyData { offset: number; jitter: number; frequency: number; }
-interface SystemData { cpu: number; ram: number; temp: number; networkRate: number; }
+interface SystemData { cpu: number; ram: number; temp: number; rxRate: number; txRate: number; disk: number; load: number; uptime: number; }
 interface HistoryData { timestamp: string; cpu: number; temp: number; offset: number; jitter: number; }
+
+function formatUptime(seconds: number) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+}
 
 function App() {
   const [activeTab, setActiveTab] = useState<'gauges' | 'history' | 'sources'>('gauges');
   
   const [data, setData] = useState<ChronyData>({ offset: 0, jitter: 0, frequency: 0 });
-  const [sysData, setSysData] = useState<SystemData>({ cpu: 0, ram: 0, temp: 0, networkRate: 0 });
+  const [sysData, setSysData] = useState<SystemData>({ cpu: 0, ram: 0, temp: 0, rxRate: 0, txRate: 0, disk: 0, load: 0, uptime: 0 });
   const [history, setHistory] = useState<HistoryData[]>([]);
   const [sources, setSources] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -23,7 +29,7 @@ function App() {
         fetch('/api/system')
       ]);
       if (chronyResp.status === 401) {
-        setError('Authentication Required (Check your basic auth credentials).');
+        setError('Authentication Required.');
         return;
       }
       const chronyJson = await chronyResp.json();
@@ -44,7 +50,11 @@ function App() {
         cpu: sysJson.cpu || 0,
         ram: sysJson.ram || 0,
         temp: sysJson.temp || 0,
-        networkRate: sysJson.networkRate || 0
+        rxRate: sysJson.rxRate || 0,
+        txRate: sysJson.txRate || 0,
+        disk: sysJson.disk || 0,
+        load: sysJson.load || 0,
+        uptime: sysJson.uptime || 0
       });
       setError('');
     } catch (e: any) {
@@ -106,36 +116,15 @@ function App() {
           <div className="gauges-container">
             <div className="gauge-panel">
               <h2>OFFSET (ms)</h2>
-              <GaugeComponent
-                {...defaultGaugeOptions}
-                arc={{...defaultGaugeOptions.arc, subArcs: [
-                  { limit: -50, color: '#EA4228' }, { limit: -10, color: '#F5CD19' },
-                  { limit: 10, color: '#5BE12C' }, { limit: 50, color: '#F5CD19' },
-                  { limit: 100, color: '#EA4228' }
-                ]}}
-                value={data.offset} minValue={-100} maxValue={100}
-              />
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: -50, color: '#EA4228' }, { limit: -10, color: '#F5CD19' }, { limit: 10, color: '#5BE12C' }, { limit: 50, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={data.offset} minValue={-100} maxValue={100} />
             </div>
             <div className="gauge-panel">
               <h2>JITTER (ms)</h2>
-              <GaugeComponent
-                {...defaultGaugeOptions}
-                arc={{...defaultGaugeOptions.arc, subArcs: [
-                  { limit: 5, color: '#5BE12C' }, { limit: 15, color: '#F5CD19' }, { limit: 50, color: '#EA4228' }
-                ]}}
-                value={data.jitter} minValue={0} maxValue={50}
-              />
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 5, color: '#5BE12C' }, { limit: 15, color: '#F5CD19' }, { limit: 50, color: '#EA4228' }]}} value={data.jitter} minValue={0} maxValue={50} />
             </div>
             <div className="gauge-panel">
               <h2>FREQ (ppm)</h2>
-              <GaugeComponent
-                {...defaultGaugeOptions}
-                arc={{...defaultGaugeOptions.arc, subArcs: [
-                  { limit: -30, color: '#EA4228' }, { limit: -10, color: '#F5CD19' },
-                  { limit: 10, color: '#5BE12C' }, { limit: 30, color: '#F5CD19' }, { limit: 50, color: '#EA4228' }
-                ]}}
-                value={data.frequency} minValue={-50} maxValue={50}
-              />
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: -30, color: '#EA4228' }, { limit: -10, color: '#F5CD19' }, { limit: 10, color: '#5BE12C' }, { limit: 30, color: '#F5CD19' }, { limit: 50, color: '#EA4228' }]}} value={data.frequency} minValue={-50} maxValue={50} />
             </div>
           </div>
 
@@ -144,43 +133,41 @@ function App() {
           <div className="gauges-container">
             <div className="gauge-panel system-gauge">
               <h2>CPU (%)</h2>
-              <GaugeComponent
-                {...defaultGaugeOptions}
-                arc={{...defaultGaugeOptions.arc, subArcs: [
-                  { limit: 50, color: '#5BE12C' }, { limit: 80, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }
-                ]}}
-                value={sysData.cpu} minValue={0} maxValue={100}
-              />
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 50, color: '#5BE12C' }, { limit: 80, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={sysData.cpu} minValue={0} maxValue={100} />
             </div>
             <div className="gauge-panel system-gauge">
               <h2>TEMP (°C)</h2>
-              <GaugeComponent
-                {...defaultGaugeOptions}
-                arc={{...defaultGaugeOptions.arc, subArcs: [
-                  { limit: 50, color: '#5BE12C' }, { limit: 75, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }
-                ]}}
-                value={sysData.temp} minValue={0} maxValue={100}
-              />
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 50, color: '#5BE12C' }, { limit: 75, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={sysData.temp} minValue={0} maxValue={100} />
             </div>
             <div className="gauge-panel system-gauge">
               <h2>RAM (%)</h2>
-              <GaugeComponent
-                {...defaultGaugeOptions}
-                arc={{...defaultGaugeOptions.arc, subArcs: [
-                  { limit: 60, color: '#5BE12C' }, { limit: 85, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }
-                ]}}
-                value={sysData.ram} minValue={0} maxValue={100}
-              />
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 60, color: '#5BE12C' }, { limit: 85, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={sysData.ram} minValue={0} maxValue={100} />
             </div>
             <div className="gauge-panel system-gauge">
-              <h2>NET (kB/s)</h2>
-              <GaugeComponent
-                {...defaultGaugeOptions}
-                arc={{...defaultGaugeOptions.arc, subArcs: [
-                  { limit: 100, color: '#5BE12C' }, { limit: 1000, color: '#F5CD19' }, { limit: 10000, color: '#EA4228' }
-                ]}}
-                value={sysData.networkRate} minValue={0} maxValue={10000}
-              />
+              <h2>DISK (%)</h2>
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 70, color: '#5BE12C' }, { limit: 90, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={sysData.disk} minValue={0} maxValue={100} />
+            </div>
+          </div>
+
+          <div className="divider"></div>
+          <h3 className="section-title">Network & Load</h3>
+          <div className="gauges-container">
+             <div className="gauge-panel system-gauge">
+              <h2>RX (kB/s)</h2>
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 1000, color: '#5BE12C' }, { limit: 5000, color: '#F5CD19' }, { limit: 10000, color: '#EA4228' }]}} value={sysData.rxRate} minValue={0} maxValue={10000} />
+            </div>
+            <div className="gauge-panel system-gauge">
+              <h2>TX (kB/s)</h2>
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 1000, color: '#5BE12C' }, { limit: 5000, color: '#F5CD19' }, { limit: 10000, color: '#EA4228' }]}} value={sysData.txRate} minValue={0} maxValue={10000} />
+            </div>
+            <div className="gauge-panel system-gauge">
+              <h2>LOAD (1m)</h2>
+              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 1.0, color: '#5BE12C' }, { limit: 2.0, color: '#F5CD19' }, { limit: 4.0, color: '#EA4228' }]}} value={sysData.load} minValue={0} maxValue={4} />
+            </div>
+            
+            <div className="digital-panel">
+               <h2>FLIGHT TIME</h2>
+               <div className="digital-display">{formatUptime(sysData.uptime)}</div>
             </div>
           </div>
         </div>
