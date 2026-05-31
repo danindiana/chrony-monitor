@@ -31,9 +31,9 @@ function App() {
       const sysJson = await sysResp.json();
       
       const raw = chronyJson.output as string;
-      const offsetMatch = raw.match(/Offset\s+([\-\d.]+)/i);
-      const jitterMatch = raw.match(/RMS\s+offset\s+([\-\d.]+)/i);
-      const freqMatch = raw.match(/Frequency\s+([\-\d.]+)/i);
+      const offsetMatch = raw.match(/Last offset\s*:\s*([+\-\d.]+)/i);
+      const jitterMatch = raw.match(/RMS offset\s*:\s*([+\-\d.]+)/i);
+      const freqMatch = raw.match(/Frequency\s*:\s*([+\-\d.]+)/i);
       
       setData({
         offset: offsetMatch ? parseFloat(offsetMatch[1]) * 1000 : 0,
