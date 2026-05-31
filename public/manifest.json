@@ -1,0 +1,16 @@
+{
+  "name": "Chrony Monitor",
+  "short_name": "Chrony",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#00ffcc",
+  "description": "Flight Telemetry NTP Monitor",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

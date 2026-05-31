@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  chrony-monitor:
+    build: .
+    container_name: chrony-monitor
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./metrics.db:/app/metrics.db
+      - /sys/class/thermal/thermal_zone0/temp:/sys/class/thermal/thermal_zone0/temp:ro
+      - /sys/class/net:/sys/class/net:ro
+    environment:
+      - AUTH_USER=${AUTH_USER:-admin}
+      - AUTH_PASS=${AUTH_PASS:-secret}
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
+      - ALERT_TEMP_C=${ALERT_TEMP_C:-80}
+      - ALERT_OFFSET_MS=${ALERT_OFFSET_MS:-50}
+    # Note: Accessing chronyc from a Docker container requires special permissions
+    # or mapping the chrony socket if possible, or running chronyd in container.
+    # We will use host network so chronyc can reach localhost.
+    network_mode: "host"

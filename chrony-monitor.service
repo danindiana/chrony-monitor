@@ -1,0 +1,18 @@
+[Unit]
+Description=Chrony Monitor Dashboard Server
+After=network.target chrony.service
+
+[Service]
+Type=simple
+User=jeb
+WorkingDirectory=/home/jeb/chrony-monitor
+ExecStart=/usr/bin/env node /home/jeb/chrony-monitor/server.cjs
+Restart=always
+RestartSec=3
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=chrony-monitor
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
