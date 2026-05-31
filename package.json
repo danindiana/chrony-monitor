@@ -14,7 +14,9 @@
     "express": "^5.2.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-flight-indicators": "^1.0.1",
     "react-gauge-component": "^2.0.29",
+    "react-is": "^19.2.6",
     "recharts": "^3.8.1",
     "sqlite3": "^6.0.1"
   },
