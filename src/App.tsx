@@ -195,7 +195,7 @@ function App() {
                 <Line type="monotone" dataKey="offset" stroke="#00ffcc" dot={false} name="Offset (ms)" />
                 <Line type="monotone" dataKey="temp" stroke="#EA4228" dot={false} name="Temp (°C)" />
                 <CartesianGrid stroke="#333" strokeDasharray="5 5" />
-                <XAxis dataKey="timestamp" stroke="#aaa" tickFormatter={(t) => new Date(t).toLocaleTimeString()} />
+                <XAxis dataKey="timestamp" stroke="#aaa" tickFormatter={(t: any) => new Date(t).toLocaleTimeString()} />
                 <YAxis stroke="#aaa" />
                 <Tooltip contentStyle={{ backgroundColor: '#2a2a2a', borderColor: '#444' }} />
                 <Legend />
