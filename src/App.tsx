@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import GaugeComponent from 'react-gauge-component';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { AttitudeIndicator, HeadingIndicator, Altimeter, Airspeed, TurnCoordinator, Variometer } from 'react-flight-indicators';
 import './App.css';
 
 interface ChronyData { offset: number; jitter: number; frequency: number; }
@@ -114,55 +115,51 @@ function App() {
         <div className="tab-content">
           <h3 className="section-title">Chrony NTP</h3>
           <div className="gauges-container">
-            <div className="gauge-panel">
+            <div className="flight-gauge-panel">
               <h2>OFFSET (ms)</h2>
-              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: -50, color: '#EA4228' }, { limit: -10, color: '#F5CD19' }, { limit: 10, color: '#5BE12C' }, { limit: 50, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={data.offset} minValue={-100} maxValue={100} />
+              <HeadingIndicator heading={Math.abs(data.offset * 10)} size={240} />
             </div>
-            <div className="gauge-panel">
+            <div className="flight-gauge-panel">
               <h2>JITTER (ms)</h2>
-              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 5, color: '#5BE12C' }, { limit: 15, color: '#F5CD19' }, { limit: 50, color: '#EA4228' }]}} value={data.jitter} minValue={0} maxValue={50} />
+              <Variometer vario={data.jitter * 10} size={240} />
             </div>
-            <div className="gauge-panel">
+            <div className="flight-gauge-panel">
               <h2>FREQ (ppm)</h2>
-              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: -30, color: '#EA4228' }, { limit: -10, color: '#F5CD19' }, { limit: 10, color: '#5BE12C' }, { limit: 30, color: '#F5CD19' }, { limit: 50, color: '#EA4228' }]}} value={data.frequency} minValue={-50} maxValue={50} />
+              <Airspeed speed={Math.abs(data.frequency)} size={240} />
             </div>
           </div>
 
           <div className="divider"></div>
           <h3 className="section-title">System Health</h3>
           <div className="gauges-container">
-            <div className="gauge-panel system-gauge">
+            <div className="flight-gauge-panel">
               <h2>CPU (%)</h2>
-              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 50, color: '#5BE12C' }, { limit: 80, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={sysData.cpu} minValue={0} maxValue={100} />
+              <AttitudeIndicator pitch={(sysData.temp - 50) * 1.5} roll={sysData.cpu / 2} size={240} />
             </div>
-            <div className="gauge-panel system-gauge">
-              <h2>TEMP (°C)</h2>
-              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 50, color: '#5BE12C' }, { limit: 75, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={sysData.temp} minValue={0} maxValue={100} />
+            <div className="flight-gauge-panel">
+              <h2>DISK (%)</h2>
+              <Altimeter altitude={sysData.disk * 100} size={240} />
             </div>
             <div className="gauge-panel system-gauge">
               <h2>RAM (%)</h2>
               <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 60, color: '#5BE12C' }, { limit: 85, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={sysData.ram} minValue={0} maxValue={100} />
-            </div>
-            <div className="gauge-panel system-gauge">
-              <h2>DISK (%)</h2>
-              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 70, color: '#5BE12C' }, { limit: 90, color: '#F5CD19' }, { limit: 100, color: '#EA4228' }]}} value={sysData.disk} minValue={0} maxValue={100} />
             </div>
           </div>
 
           <div className="divider"></div>
           <h3 className="section-title">Network & Load</h3>
           <div className="gauges-container">
-             <div className="gauge-panel system-gauge">
+            <div className="flight-gauge-panel">
+               <h2>LOAD</h2>
+               <TurnCoordinator turn={sysData.load * 10} size={240} />
+            </div>
+            <div className="gauge-panel system-gauge">
               <h2>RX (kB/s)</h2>
               <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 1000, color: '#5BE12C' }, { limit: 5000, color: '#F5CD19' }, { limit: 10000, color: '#EA4228' }]}} value={sysData.rxRate} minValue={0} maxValue={10000} />
             </div>
             <div className="gauge-panel system-gauge">
               <h2>TX (kB/s)</h2>
               <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 1000, color: '#5BE12C' }, { limit: 5000, color: '#F5CD19' }, { limit: 10000, color: '#EA4228' }]}} value={sysData.txRate} minValue={0} maxValue={10000} />
-            </div>
-            <div className="gauge-panel system-gauge">
-              <h2>LOAD (1m)</h2>
-              <GaugeComponent {...defaultGaugeOptions} arc={{...defaultGaugeOptions.arc, subArcs: [{ limit: 1.0, color: '#5BE12C' }, { limit: 2.0, color: '#F5CD19' }, { limit: 4.0, color: '#EA4228' }]}} value={sysData.load} minValue={0} maxValue={4} />
             </div>
             
             <div className="digital-panel">
