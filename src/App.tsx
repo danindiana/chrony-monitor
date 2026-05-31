@@ -117,15 +117,15 @@ function App() {
           <div className="gauges-container">
             <div className="flight-gauge-panel">
               <h2>OFFSET (ms)</h2>
-              <HeadingIndicator heading={Math.abs(data.offset * 10)} size={240} />
+              <HeadingIndicator heading={Math.abs(data.offset * 10)} size={280} />
             </div>
             <div className="flight-gauge-panel">
               <h2>JITTER (ms)</h2>
-              <Variometer vario={data.jitter * 10} size={240} />
+              <Variometer vario={data.jitter * 10} size={280} />
             </div>
             <div className="flight-gauge-panel">
               <h2>FREQ (ppm)</h2>
-              <Airspeed speed={Math.abs(data.frequency)} size={240} />
+              <Airspeed speed={Math.abs(data.frequency)} size={280} />
             </div>
           </div>
 
@@ -134,11 +134,11 @@ function App() {
           <div className="gauges-container">
             <div className="flight-gauge-panel">
               <h2>CPU (%)</h2>
-              <AttitudeIndicator pitch={(sysData.temp - 50) * 1.5} roll={sysData.cpu / 2} size={240} />
+              <AttitudeIndicator pitch={(sysData.temp - 50) * 1.5} roll={sysData.cpu / 2} size={280} />
             </div>
             <div className="flight-gauge-panel">
               <h2>DISK (%)</h2>
-              <Altimeter altitude={sysData.disk * 100} size={240} />
+              <Altimeter altitude={sysData.disk * 100} size={280} />
             </div>
             <div className="gauge-panel system-gauge">
               <h2>RAM (%)</h2>
@@ -151,7 +151,7 @@ function App() {
           <div className="gauges-container">
             <div className="flight-gauge-panel">
                <h2>LOAD</h2>
-               <TurnCoordinator turn={sysData.load * 10} size={240} />
+               <TurnCoordinator turn={sysData.load * 10} size={280} />
             </div>
             <div className="gauge-panel system-gauge">
               <h2>RX (kB/s)</h2>
