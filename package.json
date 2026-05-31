@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postinstall": "node patch-svgs.js"
+    "postinstall": "node patch-svgs.cjs"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
