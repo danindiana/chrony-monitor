@@ -1,5 +1,7 @@
 # Flight Telemetry NTP Monitor
 
+![Build Status](https://github.com/danindiana/chrony-monitor/actions/workflows/ci.yml/badge.svg) ![License](https://img.shields.io/github/license/danindiana/chrony-monitor) ![Node Version](https://img.shields.io/node/v/express)
+
 <div align="center">
   <img src="public/logo.png" alt="Flight Telemetry NTP Monitor Logo" width="300"/>
 </div>
