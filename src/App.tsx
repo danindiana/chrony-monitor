@@ -21,7 +21,6 @@ function App() {
       const jitterMatch = raw.match(/RMS\s+offset\s+([\-\d.]+)/i);
       const freqMatch = raw.match(/Frequency\s+([\-\d.]+)/i);
       setData({
-        // Scale values to something that fits the gauge. The raw output is typically in seconds.
         offset: offsetMatch ? parseFloat(offsetMatch[1]) * 1000 : 0, // seconds to ms
         jitter: jitterMatch ? parseFloat(jitterMatch[1]) * 1000 : 0, // seconds to ms
         frequency: freqMatch ? parseFloat(freqMatch[1]) : 0,
@@ -38,34 +37,6 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const gaugeOptions = {
-    type: "semicircle" as const,
-    arc: {
-      width: 0.15,
-      padding: 0.02,
-      cornerRadius: 1,
-      gradient: false,
-    },
-    pointer: {
-      type: "needle",
-      elastic: true,
-      animationDelay: 0,
-      color: '#EA4228',
-      length: 0.8,
-      width: 15
-    },
-    labels: {
-      valueLabel: {
-        formatTextValue: (value: any) => value.toFixed(2),
-        style: { fill: '#fff', textShadow: 'none' }
-      },
-      tickLabels: {
-        type: 'outer',
-        ticks: []
-      }
-    }
-  };
-
   return (
     <div className="dashboard">
       <div className="panel-header">
@@ -77,12 +48,12 @@ function App() {
         <div className="gauge-panel">
           <h2>OFFSET (ms)</h2>
           <GaugeComponent
-            {...gaugeOptions}
-            value={data.offset}
-            minValue={-100}
-            maxValue={100}
+            type="semicircle"
             arc={{
-              ...gaugeOptions.arc,
+              width: 0.15,
+              padding: 0.02,
+              cornerRadius: 1,
+              gradient: false,
               subArcs: [
                 { limit: -50, color: '#EA4228' },
                 { limit: -10, color: '#F5CD19' },
@@ -91,34 +62,64 @@ function App() {
                 { limit: 100, color: '#EA4228' }
               ]
             }}
+            pointer={{
+              type: "needle",
+              elastic: true,
+              animationDelay: 0,
+              color: '#EA4228',
+              length: 0.8,
+              width: 15
+            }}
+            labels={{
+              valueLabel: { formatTextValue: (v: any) => v.toFixed(2), style: { fill: '#fff', textShadow: 'none' } },
+              tickLabels: { type: 'outer', ticks: [] }
+            }}
+            value={data.offset}
+            minValue={-100}
+            maxValue={100}
           />
         </div>
         <div className="gauge-panel">
           <h2>JITTER (ms)</h2>
           <GaugeComponent
-            {...gaugeOptions}
-            value={data.jitter}
-            minValue={0}
-            maxValue={50}
+            type="semicircle"
             arc={{
-              ...gaugeOptions.arc,
+              width: 0.15,
+              padding: 0.02,
+              cornerRadius: 1,
+              gradient: false,
               subArcs: [
                 { limit: 5, color: '#5BE12C' },
                 { limit: 15, color: '#F5CD19' },
                 { limit: 50, color: '#EA4228' }
               ]
             }}
+            pointer={{
+              type: "needle",
+              elastic: true,
+              animationDelay: 0,
+              color: '#EA4228',
+              length: 0.8,
+              width: 15
+            }}
+            labels={{
+              valueLabel: { formatTextValue: (v: any) => v.toFixed(2), style: { fill: '#fff', textShadow: 'none' } },
+              tickLabels: { type: 'outer', ticks: [] }
+            }}
+            value={data.jitter}
+            minValue={0}
+            maxValue={50}
           />
         </div>
         <div className="gauge-panel">
           <h2>FREQUENCY (ppm)</h2>
           <GaugeComponent
-            {...gaugeOptions}
-            value={data.frequency}
-            minValue={-50}
-            maxValue={50}
+            type="semicircle"
             arc={{
-              ...gaugeOptions.arc,
+              width: 0.15,
+              padding: 0.02,
+              cornerRadius: 1,
+              gradient: false,
               subArcs: [
                 { limit: -30, color: '#EA4228' },
                 { limit: -10, color: '#F5CD19' },
@@ -127,6 +128,21 @@ function App() {
                 { limit: 50, color: '#EA4228' }
               ]
             }}
+            pointer={{
+              type: "needle",
+              elastic: true,
+              animationDelay: 0,
+              color: '#EA4228',
+              length: 0.8,
+              width: 15
+            }}
+            labels={{
+              valueLabel: { formatTextValue: (v: any) => v.toFixed(2), style: { fill: '#fff', textShadow: 'none' } },
+              tickLabels: { type: 'outer', ticks: [] }
+            }}
+            value={data.frequency}
+            minValue={-50}
+            maxValue={50}
           />
         </div>
       </div>
